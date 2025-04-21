@@ -1,5 +1,5 @@
 module binary_time_converter (
-    input  wire [31:0] t,
+    input  wire [27:0] t,
     output wire [ 7:0] hh,
     output wire [ 7:0] mm,
     output wire [ 7:0] ss,
@@ -7,13 +7,13 @@ module binary_time_converter (
     output reg  [ 7:0] MM,
     output reg  [15:0] YYYY
 );
-  parameter DAY = 32'd86400;
-  parameter HOUR = 32'd3600;
-  parameter MINUTE = 32'd60;
+  parameter DAY = 86400;
+  parameter HOUR = 3600;
+  parameter MINUTE = 60;
   reg  [ 7:0] dayinmonth;
-  wire [31:0] days;
-  wire [31:0] timeinday, timeinhour;
-  reg [31:0] remainingdays;
+  wire [11:0] days;
+  wire [16:0] timeinday, timeinhour;
+  reg [27:0] remainingdays;
   assign days = t / DAY;
 
   assign timeinday = t % DAY;

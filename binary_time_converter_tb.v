@@ -1,12 +1,12 @@
 `timescale 1s / 1ms
 module binary_time_converter_tb;
-  reg [31:0] t;
+  reg [27:0] t;
   wire [7:0] hh;
   wire [7:0] mm;
   wire [7:0] ss;
   wire [7:0] DD;
   wire [7:0] MM;
-  wire [15:0] YYYY;
+  wire [11:0] YYYY;
   integer i;
   binary_time_converter DUT (
       t,
