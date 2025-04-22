@@ -5,7 +5,8 @@ module binary_time_converter (
     output wire [ 5:0] ss,
     output reg  [ 4:0] DD,
     output reg  [ 3:0] MM,
-    output reg  [10:0] YYYY
+    output reg  [10:0] YYYY,
+    output wire [ 2:0] week
 );
   parameter DAY = 86400;
   parameter HOUR = 3600;
@@ -22,7 +23,8 @@ module binary_time_converter (
   assign mm = timeinhour / MINUTE;
 
   assign ss = timeinhour % MINUTE;
-
+  // Week to be assigned as SUN=0,MON=1,TUE=2,WED=3,THU=4,FRI=5,SAT=6
+  assign week = (3 + days) % 7;
   always @(*) begin
     //Computing YYYY
     YYYY = 0000;
