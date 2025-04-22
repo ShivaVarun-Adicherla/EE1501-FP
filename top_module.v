@@ -34,7 +34,7 @@ module top_module (
   reg enable;
   always @(posedge reset or posedge togglestart) begin
     if (reset == 1) enable = 0;
-    else enable = 1;
+    else enable = ~enable;
   end
 
   //counter for actual time.
