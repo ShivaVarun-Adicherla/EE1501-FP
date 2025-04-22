@@ -1,0 +1,60 @@
+`timescale 1s / 1ms
+module top_module_tb;
+  reg clk, change_mode, increment, decrement, select, reset, togglestart;
+  top_module DUT (
+
+      clk,
+      change_mode,
+      increment,  //Increases the selected parameter by 1.(second,minute,hour,day)
+      decrement,  //Decreases the selected parameter by 1.(second,minute,hour,day)
+      select,  //To select which parameter we are changing.(Advised to use when clock is stopped, or for timer/alarm)
+      reset,  //Resets everything to default values(MUST BE USED ON STARTUP)
+      togglestart,  //Toggles if clock is running or not.
+      ,,,,,
+  );
+
+  always #0.5 clk = ~clk;
+
+  initial begin
+    $dumpfile("simout.vcd");
+    $dumpvars;
+    clk = 0;
+    change_mode = 0;
+    increment = 0;
+    decrement = 0;
+    select = 0;
+    reset = 0;
+    togglestart = 0;
+    #1;
+    reset = 1;
+    #1;
+    reset = 0;
+    #1;
+    togglestart = 1;
+    #1 togglestart = 0;
+    #100;
+    togglestart = 1;
+    #1;
+    togglestart = 0;
+    #1;
+    repeat (5) begin
+      increment = 1;
+      #1;
+      increment = 0;
+      #1;
+    end
+    select = 1;
+    #1;
+    select = 0;
+    #1;
+    decrement = 1;
+    #1;
+    decrement = 0;
+    #1;
+    togglestart = 1;
+    #1;
+    togglestart = 0;
+    #100;
+    $finish;
+  end
+endmodule
