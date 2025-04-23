@@ -13,7 +13,7 @@ module binary_counter (
     else if (enable == 1) t = t + 1;
   end
   always @(posedge increment or posedge decrement) begin
-    if (reset == 0) begin
+    if (reset == 0 && mode == 0) begin
       case (selected)
         //seconds
         2'b00:   t = increment ? t + 1 : t - 1;

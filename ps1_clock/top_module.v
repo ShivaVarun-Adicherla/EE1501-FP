@@ -7,7 +7,8 @@ module top_module (
     input wire decrement,  //Decreases the selected parameter by 1.(second,minute,hour,day)
     input wire select,  //To select which parameter we are changing.(Advised to use when clock is stopped, or for timer/alarm)
     input wire reset,  //Resets everything to default values(MUST BE USED ON STARTUP)
-    input wire togglestart,  //Toggles if clock is running or not. 
+    input wire start_main,  //Toggles if clock is running or not. 
+    input wire startstop_alarm_timer,
     output [5:0][3:0] hhmmss,  //Output
     output [7:0][3:0] ddmmyyyy,  //Output
     output [2:0][7:0] weekascii,
@@ -33,13 +34,13 @@ module top_module (
   );
   // If enable=1, count, else not. This is for Main mode only.
   reg enable;
-  always @(posedge reset or posedge togglestart) begin
+  always @(posedge reset or posedge start_main) begin
     if (reset == 1) enable = 0;
     else if (mode == 2'b0) enable = ~enable;
   end
 
   //counter for actual time.
-  wire [27:0] t;
+  wire [27:0] t_main;
   binary_counter main_counter (
       reset,
       clk,
@@ -48,21 +49,22 @@ module top_module (
       decrement,
       mode,
       selected,
-      t
+      t_main
   );
 
   //ALARM
+  wire [27:0] t_alarm;
   alarm alarm_inst (
       reset,
-      t,
+      t_main,
       mode,
-      togglestart,
+      startstop_alarm_timer,
       increment,
       decrement,
       selected,
 
       t_alarm,
-      timer_buzzer
+      alarm_buzzer
 
   );
 
@@ -74,7 +76,7 @@ module top_module (
   wire [10:0] YYYY;
   wire [ 2:0] week;
   binary_time_converter maincountout (
-      t,
+      t_main,
       hh,
       mm,
       ss,

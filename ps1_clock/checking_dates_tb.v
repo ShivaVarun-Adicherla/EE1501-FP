@@ -2,10 +2,11 @@
 `timescale 1s / 1ms
 // We will not enable the timer and increment day 2000 times to check if all the dates match to actual dates.
 module checking_dates_tb;
-  reg clk, change_mode, increment, decrement, select, reset, togglestart;
+  reg clk, change_mode, increment, decrement, select, reset, togglestart, startstop_alarm_timer;
   wire [5:0][3:0] hhmmss;
   wire [7:0][3:0] ddmmyyyy;
   wire [2:0][7:0] weekascii;
+  wire AM_mode, PM_Mode, timer_buzzer, alarm_buzzer;
   top_module DUT (
 
       clk,
@@ -17,8 +18,12 @@ module checking_dates_tb;
       togglestart,  //Toggles if clock is running or not.
       hhmmss,
       ddmmyyyy,
-      weekascii
-      ,,,,
+      weekascii,
+      startstop_alarm_timer,
+      AM_mode,
+      PM_mode,
+      timer_buzzer,
+      alarm_buzzer
   );
 
   always #0.5 clk = ~clk;
@@ -39,10 +44,10 @@ module checking_dates_tb;
     reset = 0;
     #1;
     repeat (3) begin
-      select=1;
-#1;
-select=0;
-#1;
+      select = 1;
+      #1;
+      select = 0;
+      #1;
     end
     repeat (2000) begin
       increment = 1;

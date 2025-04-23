@@ -17,7 +17,7 @@ module alarm (
     input wire startstop,
     input wire increment,
     input wire decrement,
-    input wire selected,
+    input wire [1:0] selected,
     output reg [27:0] t_alarm,
     output wire timer_buzzer
 );

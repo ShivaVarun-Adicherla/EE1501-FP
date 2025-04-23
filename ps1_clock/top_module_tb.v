@@ -1,9 +1,10 @@
 `timescale 1s / 1ms
 module top_module_tb;
-  reg clk, change_mode, increment, decrement, select, reset, togglestart;
+  reg clk, change_mode, increment, decrement, select, reset, togglestart, startstop_alarm_timer;
   wire [5:0][3:0] hhmmss;
   wire [7:0][3:0] ddmmyyyy;
   wire [2:0][7:0] weekascii;
+  wire AM_mode, PM_Mode, timer_buzzer, alarm_buzzer;
   top_module DUT (
 
       clk,
@@ -13,10 +14,14 @@ module top_module_tb;
       select,  //To select which parameter we are changing.(Advised to use when clock is stopped, or for timer/alarm)
       reset,  //Resets everything to default values(MUST BE USED ON STARTUP)
       togglestart,  //Toggles if clock is running or not.
+      startstop_alarm_timer,
       hhmmss,
       ddmmyyyy,
-      weekascii
-      ,,,,
+      weekascii,
+      AM_mode,
+      PM_mode,
+      timer_buzzer,
+      alarm_buzzer
   );
 
   always #0.5 clk = ~clk;
@@ -31,6 +36,7 @@ module top_module_tb;
     select = 0;
     reset = 0;
     togglestart = 0;
+    startstop_alarm_timer = 0;
     #1;
     reset = 1;
     #1;
