@@ -67,7 +67,20 @@ module top_module (
       alarm_buzzer
 
   );
+  //TIMER
+  wire [27:0] t_timer;
+  // TODO: Timer
 
+
+  //Choosing what to display based on mode
+  wire [27:0] t_out;
+  tmux tmux_inst (
+      t_main,
+      t_alarm,
+      t_timer,
+      mode,
+      t_out
+  );
   wire [ 4:0] hh;
   wire [ 5:0] mm;
   wire [ 5:0] ss;
@@ -76,7 +89,7 @@ module top_module (
   wire [10:0] YYYY;
   wire [ 2:0] week;
   binary_time_converter maincountout (
-      t_main,
+      t_out,
       hh,
       mm,
       ss,
