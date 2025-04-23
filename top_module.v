@@ -10,6 +10,7 @@ module top_module (
     input wire togglestart,  //Toggles if clock is running or not. 
     output [5:0][3:0] hhmmss,  //Output
     output [7:0][3:0] ddmmyyyy,  //Output
+    output [2:0][7:0] weekascii,
     output AM_mode,  //High if AM, zero in 24
     output PM_mode,  //High if PM,zero in 24
     output timer_buzzer,  //Buzzer for timer
@@ -25,7 +26,7 @@ module top_module (
   );
 
   wire [1:0] selected;
-  mode_sel select_sel (
+  sel_sel select_sel (
       reset,
       select,
       selected
@@ -58,7 +59,7 @@ module top_module (
   wire [ 3:0] MM;
   wire [10:0] YYYY;
   wire [ 2:0] week;
-  binary_time_converter maindisplay (
+  binary_time_converter maincountout (
       t,
       hh,
       mm,
@@ -68,5 +69,17 @@ module top_module (
       YYYY,
       week
 
+  );
+  time_to_output maindisplay (
+      hh,
+      mm,
+      ss,
+      DD,
+      MM,
+      YYYY,
+      week,
+      hhmmss,
+      ddmmyyyy,
+      weekascii
   );
 endmodule

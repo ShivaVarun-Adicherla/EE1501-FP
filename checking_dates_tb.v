@@ -1,5 +1,7 @@
+
 `timescale 1s / 1ms
-module top_module_tb;
+// We will not enable the timer and increment day 2000 times to check if all the dates match to actual dates.
+module checking_dates_tb;
   reg clk, change_mode, increment, decrement, select, reset, togglestart;
   wire [5:0][3:0] hhmmss;
   wire [7:0][3:0] ddmmyyyy;
@@ -36,31 +38,18 @@ module top_module_tb;
     #1;
     reset = 0;
     #1;
-    togglestart = 1;
-    #1 togglestart = 0;
-    #100;
-    togglestart = 1;
-    #1;
-    togglestart = 0;
-    #1;
-    repeat (5) begin
-      increment = 1;
-      #1;
-      increment = 0;
-      #1;
+    repeat (3) begin
+      select=1;
+#1;
+select=0;
+#1;
     end
-    select = 1;
-    #1;
-    select = 0;
-    #1;
-    decrement = 1;
-    #1;
-    decrement = 0;
-    #1;
-    togglestart = 1;
-    #1;
-    togglestart = 0;
-    #100;
+    repeat (2000) begin
+      increment = 1;
+      #0.5;
+      increment = 0;
+      #0.5;
+    end
     $finish;
   end
 endmodule
