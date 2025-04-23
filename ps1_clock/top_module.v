@@ -31,11 +31,11 @@ module top_module (
       select,
       selected
   );
-  // If enable=1, count, else not.
+  // If enable=1, count, else not. This is for Main mode only.
   reg enable;
   always @(posedge reset or posedge togglestart) begin
     if (reset == 1) enable = 0;
-    else enable = ~enable;
+    else if (mode == 2'b0) enable = ~enable;
   end
 
   //counter for actual time.
@@ -51,6 +51,20 @@ module top_module (
       t
   );
 
+  //ALARM
+  alarm alarm_inst (
+      reset,
+      t,
+      mode,
+      togglestart,
+      increment,
+      decrement,
+      selected,
+
+      t_alarm,
+      timer_buzzer
+
+  );
 
   wire [ 4:0] hh;
   wire [ 5:0] mm;
@@ -70,6 +84,7 @@ module top_module (
       week
 
   );
+
   time_to_output maindisplay (
       hh,
       mm,
