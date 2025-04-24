@@ -13,6 +13,7 @@ module timer (
     input wire reset,
     input wire [27:0] t_main,
     input wire [1:0] mode,
+    input wire change_mode,
     input wire startstop,
     input wire increment,
     input wire decrement,
@@ -26,22 +27,17 @@ module timer (
   always @(posedge startstop or posedge reset) begin
     if (reset == 1) begin
       timer_active = 0;
-      t_timer = 0;
     end else
-      timer_active <= (mode == 1)&~timer_active; //when in timer MODE, triggering will TOGGLE. When outside it will just stop.
-  end
-  // Setting to initial value on entering mode
-  always @(posedge (mode == 1)) begin
-    if (!timer_active) t_timer = 0;
+      timer_active <= (mode == 2)&~timer_active; //when in timer MODE, triggering will TOGGLE. When outside it will just stop.
   end
 
-  //Timer logic
-  always @(posedge clk) begin
-    if (timer_active && t_timer != 0) t_timer = t_timer - 1;
-  end
-  //Setting time logic
-  always @(posedge increment or posedge decrement) begin
-    if (reset == 0) begin
+  wire trigger;
+  assign trigger = increment | decrement | change_mode | clk;
+  // Setting to initial value on entering mode
+  always @(posedge trigger or posedge reset) begin
+    if (reset == 1) t_timer = 0;
+    else if (timer_active && clk == 1 && t_timer != 0) t_timer = t_timer - 1;
+    else if (!timer_active && (increment | decrement) && mode == 2) begin
       case (selected)
         //seconds
         2'b00:   t_timer = increment ? t_timer + 1 : t_timer - 1;
@@ -52,6 +48,7 @@ module timer (
       endcase
     end
   end
+
 
   assign timer_buzzer = (t_timer == 0) & timer_active;
 endmodule

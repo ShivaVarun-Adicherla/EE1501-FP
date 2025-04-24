@@ -8,12 +8,12 @@ module binary_counter (
     input wire [1:0] selected,
     output reg [27:0] t
 );
-  always @(posedge clk or posedge reset) begin
+  wire trigger;  //Using this for synthesiable design
+  assign trigger = increment | decrement | enable & clk;
+  always @(posedge trigger or posedge reset) begin
     if (reset == 1) t = 0;
     else if (enable == 1) t = t + 1;
-  end
-  always @(posedge increment or posedge decrement) begin
-    if (reset == 0 && mode == 0) begin
+    else if (increment || decrement) begin
       case (selected)
         //seconds
         2'b00:   t = increment ? t + 1 : t - 1;

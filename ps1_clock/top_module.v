@@ -58,6 +58,7 @@ module top_module (
       reset,
       t_main,
       mode,
+      change_mode,
       startstop_alarm_timer,
       increment,
       decrement,
@@ -74,13 +75,14 @@ module top_module (
       reset,
       t_main,
       mode,
+      change_mode,
       startstop_alarm_timer,
       increment,
       decrement,
       selected,
 
       t_timer,
-      alarm_buzzer
+      timer_buzzer
 
   );
 
