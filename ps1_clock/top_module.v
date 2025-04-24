@@ -69,7 +69,21 @@ module top_module (
   );
   //TIMER
   wire [27:0] t_timer;
-  // TODO: Timer
+  timer timer_inst (
+      clk,
+      reset,
+      t_main,
+      mode,
+      startstop_alarm_timer,
+      increment,
+      decrement,
+      selected,
+
+      t_timer,
+      alarm_buzzer
+
+  );
+
 
 
   //Choosing what to display based on mode

@@ -14,4 +14,4 @@ module tmux (
     endcase
   end
 endmodule
-;
+
