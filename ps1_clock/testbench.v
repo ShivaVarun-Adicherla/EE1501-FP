@@ -30,6 +30,8 @@ module top_module_tb;
   wire enable;
   wire [3:0] selected;
   wire [2:0] mode;
+  integer i;
+  reg [31:0] tempunix;
   top_module dut (
       .clk(clk),
       .change_mode(change_mode),
@@ -110,6 +112,32 @@ module top_module_tb;
     `en(startstop_alarm_timer);
     #610;
     `en(startstop_alarm_timer);
+    #5;
+    `en(change_mode);
+    #5;
+    comment = "Demonstrating Timezones";
+    repeat (4) begin
+      `en(change_timezone);
+      #10;
+    end
+    comment = "Demonstrating loading directly from serial input using UNIX Timestamp";
+    `en(start_main);
+    //Suppose we want to load Tuesday, April 22, 2025 8:18:33 AM For this we
+    //need a external input from another deevice like a microcontroller. To
+    //simmulate the input we will just run a for loop to input each bit in
+    //unix_data and give a clock to unix_sclk then unix_load.
+    tempunix = 1745309913;
+    for (i = 0; i < 32; i++) begin
+      unix_input = tempunix[i];
+      #0.2;
+      `en(unix_sclk);
+    end
+    unix_input = 0;
+    `en(unix_load);
+    `en(start_main);
+    #20;
     $finish;
+
+
   end
 endmodule

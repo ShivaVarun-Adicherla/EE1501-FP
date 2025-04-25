@@ -69,7 +69,7 @@ module top_module (
   unix32_to_binary unix32_inst (
       reset,
       unix_sclk,
-      unix_data,
+      unix_input,
       t_unix
   );
   //counter for actual time.

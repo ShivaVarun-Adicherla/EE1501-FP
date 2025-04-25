@@ -21,7 +21,7 @@ module time_to_output (
     hhmmss[1] = ss / 10;
     hhmmss[2] = mm % 10;
     hhmmss[3] = mm / 10;
-    if (AMPM_24 == 0) begin
+    if (AMPM_24 == 0 || mode[2]) begin
       AM_mode = 0;
       PM_mode = 0;
       hhtemp  = hh;
@@ -56,15 +56,17 @@ module time_to_output (
     ddmmyyyy[5] = MM / 10;
     ddmmyyyy[6] = DD % 10;
     ddmmyyyy[7] = DD / 10;
-    case (week)
-      3'd0: weekascii = "SUN";
-      3'd1: weekascii = "MON";
-      3'd2: weekascii = "TUE";
-      3'd3: weekascii = "WED";
-      3'd4: weekascii = "THU";
-      3'd5: weekascii = "FRI";
-      3'd6: weekascii = "SAT";
-      default: weekascii = "ERR";
-    endcase
+    if (mode[2] == 0) begin
+      case (week)
+        3'd0: weekascii = "SUN";
+        3'd1: weekascii = "MON";
+        3'd2: weekascii = "TUE";
+        3'd3: weekascii = "WED";
+        3'd4: weekascii = "THU";
+        3'd5: weekascii = "FRI";
+        3'd6: weekascii = "SAT";
+        default: weekascii = "ERR";
+      endcase
+    end else weekascii = "  ";
   end
 endmodule
