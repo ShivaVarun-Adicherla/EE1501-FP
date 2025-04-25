@@ -30,23 +30,27 @@ module top_module (
     output alarm_buzzer,  //Buzzer for alarm
     output alarm_active_led,  //Led to show if alarm is running 
     output timer_active_led,  //Led to show if timer is running
-    output [3:0] selected_led, //0001=Second, 0010=Minute, 0100=Hour, 1000=Day. To know what is selected.
-    output [2:0] mode_led  //001=Main,010=Alarm,100=Timer. To know which mode we are in.
+    output [3:0] selected, //0001=Second, 0010=Minute, 0100=Hour, 1000=Day. To know what is selected. Suppose its 4 LEDS
+    output [2:0] mode  //001=Main,010=Alarm,100=Timer. To know which mode we are in. Suppose its 3 LEDS
 );
 
-  // For toggling between modes with one button(0=NORMAL,1=ALARM,2=TIMER)
-  wire [1:0] mode;
+  // For toggling between modes with one button change_mode(001=NORMAL,010=ALARM,100=TIMER)
   mode_sel mode_sel (
       reset,
       change_mode,
       mode
   );
-
-  wire [1:0] selected;
+  //For toggling between modes with one button select(0001=Second, 0010=Minute, 0100=Hour, 1000=Day)
   sel_sel select_sel (
       reset,
       select,
       selected
+  );
+
+  sel_sel timezone_sel (
+      reset,
+      change_timezone,
+      timezone
   );
   // If enable=1, count, else not. This is for Main mode only.
   reg enable;
@@ -54,12 +58,20 @@ module top_module (
     if (reset == 1) enable = 0;
     else if (mode == 2'b0) enable = ~enable;
   end
-  // For Display mode
+  // For Display mode 0=24 format, 1=AMPM
   reg AMPM_24;
   always @(posedge reset or posedge toggle_AMPM_24) begin
     if (reset == 1) AMPM_24 = 0;
     else if (mode == 2'b0) AMPM_24 = ~AMPM_24;
   end
+  //For unix input and load(Refer to report for more info)
+  wire [27:0] t_unix;
+  unix32_to_binary unix32_inst (
+      reset,
+      unix_sclk,
+      unix_data,
+      t_unix
+  );
   //counter for actual time.
   wire [27:0] t_main;
   binary_counter main_counter (
@@ -70,6 +82,8 @@ module top_module (
       decrement,
       mode,
       selected,
+      t_unix,
+      unix_load,
       t_main
   );
 
@@ -86,7 +100,8 @@ module top_module (
       selected,
 
       t_alarm,
-      alarm_buzzer
+      alarm_buzzer,
+      alarm_active_led
 
   );
   //TIMER
@@ -103,19 +118,21 @@ module top_module (
       selected,
 
       t_timer,
-      timer_buzzer
+      timer_buzzer,
+      timer_active_led
 
   );
 
 
 
-  //Choosing what to display based on mode
+  //Choosing what to display based on mode and also implements timezone
   wire [27:0] t_out;
   tmux tmux_inst (
       t_main,
       t_alarm,
       t_timer,
       mode,
+      timezone,
       t_out
   );
   wire [ 4:0] hh;
@@ -149,6 +166,8 @@ module top_module (
       AMPM_24,
       hhmmss,
       ddmmyyyy,
-      weekascii
+      weekascii,
+      AM_mode,
+      PM_mode
   );
 endmodule

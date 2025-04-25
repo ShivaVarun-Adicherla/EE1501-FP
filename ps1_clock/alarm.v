@@ -13,16 +13,16 @@
 module alarm (
     input wire reset,
     input wire [27:0] t_main,
-    input wire [1:0] mode,
+    input wire [2:0] mode,
     input wire change_mode,
     input wire startstop,
     input wire increment,
     input wire decrement,
-    input wire [1:0] selected,
+    input wire [3:0] selected,
     output reg [27:0] t_alarm,
-    output wire timer_buzzer
+    output wire timer_buzzer,
+    output reg alarm_active
 );
-  reg  alarm_active;
   wire trigger;  //For synthesizable design
   assign trigger = increment | decrement | startstop | change_mode;
   //alarm activation logic.
@@ -30,16 +30,16 @@ module alarm (
     if (reset == 1) begin
       alarm_active = 0;
       t_alarm = 0;
-    end else if (mode == 1) begin
+    end else if (mode[1]) begin
       if (startstop == 1)
-        alarm_active <= (mode == 1)&~alarm_active; //when in ALARM MODE, triggering will TOGGLE. When outside it will just stop.
+        alarm_active <= (mode[1])&~alarm_active; //when in ALARM MODE, triggering will TOGGLE. When outside it will just stop.
       else if (increment || decrement) begin
         case (selected)
           //seconds
-          2'b00:   t_alarm = increment ? t_alarm + 1 : t_alarm - 1;
-          2'b01:   t_alarm = increment ? t_alarm + 60 : t_alarm - 60;
-          2'b10:   t_alarm = increment ? t_alarm + 3600 : t_alarm - 3600;
-          2'b11:   t_alarm = increment ? t_alarm + 86400 : t_alarm - 86400;
+          4'b0001: t_alarm = increment ? t_alarm + 1 : t_alarm - 1;
+          4'b0010: t_alarm = increment ? t_alarm + 60 : t_alarm - 60;
+          4'b0100: t_alarm = increment ? t_alarm + 3600 : t_alarm - 3600;
+          4'b1000: t_alarm = increment ? t_alarm + 86400 : t_alarm - 86400;
           default: t_alarm = t_alarm;
         endcase
       end
