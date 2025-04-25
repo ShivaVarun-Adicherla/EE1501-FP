@@ -104,9 +104,12 @@ module top_module_tb;
     #65;
     `en(startstop_alarm_timer);
     #5;
-    comment="Demonstrating Timer")
-    
-    #100;
+    comment = "Demonstrating timer for 10 mins";
+    repeat (2) `en(change_mode);
+    repeat (10) `en(increment);
+    `en(startstop_alarm_timer);
+    #610;
+    `en(startstop_alarm_timer);
     $finish;
   end
 endmodule

@@ -32,7 +32,7 @@ module timer (
   end
 
   wire trigger;
-  assign trigger = increment | decrement | change_mode | clk;
+  assign trigger = increment | decrement | change_mode | clk & timer_active;
   // Setting to initial value on entering mode
   always @(posedge trigger or posedge reset) begin
     if (reset == 1) t_timer = 0;
