@@ -24,6 +24,7 @@ module time_to_output (
     if (AMPM_24 == 0) begin
       AM_mode = 0;
       PM_mode = 0;
+      hhtemp  = hh;
     end else begin
       if (hh == 0) begin
         AM_mode = 1;

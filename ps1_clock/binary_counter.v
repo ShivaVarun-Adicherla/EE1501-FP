@@ -15,7 +15,7 @@ module binary_counter (
   assign trigger = increment | decrement | unix_load | enable & clk;
   always @(posedge trigger or posedge reset) begin
     if (reset == 1) t = 0;
-    else if (enable == 1) t = t + 1;
+    else if (enable & clk) t = t + 1;
     else if ((increment || decrement) && mode[0]) begin
       case (selected)
         //seconds

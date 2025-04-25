@@ -28,6 +28,7 @@ module top_module (
     output PM_mode,  //High if PM,zero in 24
     output timer_buzzer,  //Buzzer for timer
     output alarm_buzzer,  //Buzzer for alarm
+    output reg enable,  //Led to show if main clock is running
     output alarm_active_led,  //Led to show if alarm is running 
     output timer_active_led,  //Led to show if timer is running
     output [3:0] selected, //0001=Second, 0010=Minute, 0100=Hour, 1000=Day. To know what is selected. Suppose its 4 LEDS
@@ -53,16 +54,15 @@ module top_module (
       timezone
   );
   // If enable=1, count, else not. This is for Main mode only.
-  reg enable;
   always @(posedge reset or posedge start_main) begin
     if (reset == 1) enable = 0;
-    else if (mode == 2'b0) enable = ~enable;
+    else if (mode == 3'b001) enable = ~enable;
   end
   // For Display mode 0=24 format, 1=AMPM
   reg AMPM_24;
   always @(posedge reset or posedge toggle_AMPM_24) begin
     if (reset == 1) AMPM_24 = 0;
-    else if (mode == 2'b0) AMPM_24 = ~AMPM_24;
+    else AMPM_24 = ~AMPM_24;
   end
   //For unix input and load(Refer to report for more info)
   wire [27:0] t_unix;
