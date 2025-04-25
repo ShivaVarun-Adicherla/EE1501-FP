@@ -16,7 +16,7 @@ module top_module_tb;
   reg unix_sclk;
   reg unix_input;
   reg unix_load;
-
+  reg [128:0][7:0] comment;
   wire [5:0][3:0] hhmmss;
   wire [7:0][3:0] ddmmyyyy;
   wire [2:0][7:0] weekascii;
@@ -75,10 +75,12 @@ module top_module_tb;
     unix_load = 0;
     $dumpfile("simout.vcd");
     $dumpvars;
+    comment = "Resetting and starting clock";
     #1;
     `en(reset);
     `en(start_main);
     #100;
+    comment = "Stopping clock and incrementing decrementing";
     `en(start_main);
     repeat (5) `en(decrement);
     `en(select);
@@ -88,15 +90,22 @@ module top_module_tb;
     `en(select);
     repeat (5) `en(increment);
     #20;
+    comment = "starting and changing to AM/PM Mode";
     `en(start_main);
     `en(toggle_AMPM_24);
     #10;
+    comment = "Demonstrating Alarm";
     `en(change_mode);
     `en(select);
     `en(select);
     `en(increment);
     `en(startstop_alarm_timer);
     repeat (5) `en(change_mode);
+    #65;
+    `en(startstop_alarm_timer);
+    #5;
+    comment="Demonstrating Timer")
+    
     #100;
     $finish;
   end

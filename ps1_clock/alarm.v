@@ -43,9 +43,9 @@ module alarm (
           default: t_alarm = t_alarm;
         endcase
       end
-
+    end else begin
       if (startstop == 1)
-        alarm_active <= (mode == 1)&~alarm_active; //when in ALARM MODE, triggering will TOGGLE. When outside it will just stop.
+        alarm_active <= (mode[1])&~alarm_active; //when in ALARM MODE, triggering will TOGGLE. When outside it will just stop.
       if (!alarm_active && change_mode) t_alarm = t_main;
     end
 
