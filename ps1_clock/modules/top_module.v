@@ -36,24 +36,24 @@ module top_module (
 );
 
   // For toggling between modes with one button change_mode(001=NORMAL,010=ALARM,100=TIMER)
-  mode_sel mode_sel (
+  sel_3 mode_sel (
       reset,
       change_mode,
       mode
   );
   //For toggling between modes with one button select(0001=Second, 0010=Minute, 0100=Hour, 1000=Day)
-  sel_sel select_sel (
+  sel_4 select_sel (
       reset,
       select,
       selected
   );
 
-  sel_sel timezone_sel (
+  sel_4 timezone_sel (
       reset,
       change_timezone,
       timezone
   );
-  // If enable=1, count, else not. This is for Main mode only.
+  // If enable=1, count, else not. Th:is is for Main mode only.
   always @(posedge reset or posedge start_main) begin
     if (reset == 1) enable = 0;
     else if (mode == 3'b001) enable = ~enable;
