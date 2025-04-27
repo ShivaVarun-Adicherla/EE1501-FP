@@ -1,0 +1,84 @@
+flowchart-elk LR
+    subgraph Inputs
+        inp[User Inputs]
+        unix[Unix Inputs]
+    end
+    subgraph Selectors
+        mode_sel
+        select_sel
+        timezone_sel
+    end
+
+    subgraph Modes
+        main_counter
+        alarm_inst
+        timer_inst
+    end
+    
+    tmux[tmux_inst]
+    binary_time_converter
+    maindisplay
+    subgraph Display
+        hhmmss
+        week[day of week]
+        ddmmyyyy
+        
+        timezone
+        AMPM[AM/PM]
+    end
+        
+    subgraph Indicators
+        alarm_buzzer
+        timer_buzzer
+        enabled
+        alarm_active_led
+        timer_active_led
+        mode 
+        selected 
+    end
+    inp --> |change_mode|mode_sel
+    inp --> |select|select_sel
+    inp --> |change_timezone|timezone_sel
+    mode_sel --> Modes
+    mode_sel --> tmux
+    main_counter ==> tmux
+    alarm_inst==> tmux
+    timer_inst==>tmux
+    tmux==>binary_time_converter
+    binary_time_converter==>maindisplay
+    
+    maindisplay-->hhmmss
+    maindisplay-->ddmmyyyy
+    maindisplay-->week
+    maindisplay-->|PM_mode|AMPM
+    maindisplay-->|AM_mode|AMPM
+    alarm_inst-->alarm_buzzer
+    alarm_inst-->alarm_active_led
+    timer_inst-->timer_buzzer
+    timer_inst-->timer_active_led
+    timezone_sel-->timezone
+    mode_sel-->mode
+    select_sel-->selected
+
+    inp-->|start/stop|timer_inst
+    inp-->|start/stop|alarm_inst
+    inp-->|increment|Modes
+    inp-->|decrement|Modes
+    select_sel-->Modes
+    timezone_sel-->tmux
+    mode_sel-->maindisplay
+
+    inp-->|start_main|enable[enable logic]
+    enable-->main_counter
+    enable-->enabled
+    inp-->|change_AMPM_24|AMPMlog[AMPM Logic]
+    AMPMlog-->maindisplay
+
+    unix--unix_input-->unix32_to_binary
+    unix-->|unix_sclk|unix32_to_binary
+    unix-->|unix_load|main_counter
+    unix32_to_binary==>|t_unix|main_counter
+
+    clk-.->main_counter
+    clk-.->timer_inst
+    clk-.->alarm_inst

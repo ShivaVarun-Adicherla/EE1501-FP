@@ -1,2 +1,0 @@
-read -sv top_module.v alarm.v timer.v time_to_output.v binary_time_converter2.v sel_sel.v mode_sel.v binary_counter.v tmux.v unix32_to_binary.v 
-synth -top top_module
