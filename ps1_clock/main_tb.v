@@ -75,6 +75,13 @@ module top_module_tb;
     unix_sclk = 0;
     unix_input = 0;
     unix_load = 0;
+
+    $monitor(
+        "hh:mm:ss=%0d%0d:%0d%0d:%0d%0d | Date=%0d%0d-%0d%0d-%0d%0d%0d%0d | TZ=%b | Mode=%b | Sel=%b | Run=%b | Alarm=%b | Timer=%b | AM=%b | PM=%b | BuzzT=%b | BuzzA=%b",
+        hhmmss[5], hhmmss[4], hhmmss[3], hhmmss[2], hhmmss[1], hhmmss[0], ddmmyyyy[7], ddmmyyyy[6],
+        ddmmyyyy[5], ddmmyyyy[4], ddmmyyyy[3], ddmmyyyy[2], ddmmyyyy[1], ddmmyyyy[0], timezone,
+        mode, selected, enable, alarm_active_led, timer_active_led, AM_mode, PM_mode, timer_buzzer,
+        alarm_buzzer);
     $dumpfile("simout.vcd");
     $dumpvars;
     comment = "Resetting and starting clock";

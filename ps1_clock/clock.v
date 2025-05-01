@@ -19,51 +19,35 @@ module top_module (
     input wire unix_input,
     input wire unix_load,
     //DISPLAY OUTPUT
-    output [5:0][3:0] hhmmss,  //Output
-    output [7:0][3:0] ddmmyyyy,  //Output
-    output [2:0][7:0] weekascii,
-    output [3:0] timezone, //0001=GMT,0010=IST,0100=ET,1000=PT. Assume we have 4 leds on menu with inscriptions below them.
+    output wire [5:0][3:0] hhmmss,  //Output
+    output wire [7:0][3:0] ddmmyyyy,  //Output
+    output wire [2:0][7:0] weekascii,
+    output wire [3:0] timezone, //0001=GMT,0010=IST,0100=ET,1000=PT. Assume we have 4 leds on menu with inscriptions below them.
     //CONTROL OUTPUTS and ALARM/TIMER OUTPUTS
-    output AM_mode,  //High if AM, zero in 24
-    output PM_mode,  //High if PM,zero in 24
-    output timer_buzzer,  //Buzzer for timer
-    output alarm_buzzer,  //Buzzer for alarm
-    output reg enable,  //Led to show if main clock is running
-    output alarm_active_led,  //Led to show if alarm is running 
-    output timer_active_led,  //Led to show if timer is running
-    output [3:0] selected, //0001=Second, 0010=Minute, 0100=Hour, 1000=Day. To know what is selected. Suppose its 4 LEDS
-    output [2:0] mode  //001=Main,010=Alarm,100=Timer. To know which mode we are in. Suppose its 3 LEDS
+    output wire AM_mode,  //High if AM, zero in 24
+    output wire PM_mode,  //High if PM,zero in 24
+    output wire timer_buzzer,  //Buzzer for timer
+    output wire alarm_buzzer,  //Buzzer for alarm
+    output wire enable,  //Led to show if main clock is running
+    output wire alarm_active_led,  //Led to show if alarm is running 
+    output wire timer_active_led,  //Led to show if timer is running
+    output wire [3:0] selected, //0001=Second, 0010=Minute, 0100=Hour, 1000=Day. To know what is selected. Suppose its 4 LEDS
+    output wire [2:0] mode  //001=Main,010=Alarm,100=Timer. To know which mode we are in. Suppose its 3 LEDS
 );
-
-  // For toggling between modes with one button change_mode(001=NORMAL,010=ALARM,100=TIMER)
-  sel_3 mode_sel (
+  wire AMPM_24;
+  control_block control_block (
       reset,
       change_mode,
-      mode
-  );
-  //For toggling between modes with one button select(0001=Second, 0010=Minute, 0100=Hour, 1000=Day)
-  sel_4 select_sel (
-      reset,
       select,
-      selected
-  );
-
-  sel_4 timezone_sel (
-      reset,
       change_timezone,
-      timezone
+      start_main,
+      toggle_AMPM_24,
+      mode,
+      selected,
+      timezone,
+      enable,
+      AMPM_24
   );
-  // If enable=1, count, else not. Th:is is for Main mode only.
-  always @(posedge reset or posedge start_main) begin
-    if (reset == 1) enable = 0;
-    else if (mode == 3'b001) enable = ~enable;
-  end
-  // For Display mode 0=24 format, 1=AMPM
-  reg AMPM_24;
-  always @(posedge reset or posedge toggle_AMPM_24) begin
-    if (reset == 1) AMPM_24 = 0;
-    else AMPM_24 = ~AMPM_24;
-  end
   //For unix input and load(Refer to report for more info)
   wire [27:0] t_unix;
   unix32_to_binary unix32_inst (
@@ -171,8 +155,51 @@ module top_module (
       PM_mode
   );
 endmodule
+//Control Block
 
+module control_block (
+    input wire reset,
+    input wire change_mode,
+    input wire select,
+    input wire change_timezone,
+    input wire start_main,
+    input wire toggle_AMPM_24,
+    output wire [2:0] mode,
+    output wire [3:0] selected,
+    output wire [3:0] timezone,
+    output reg enable,
+    output reg AMPM_24
+);
 
+  // For toggling between modes with one button change_mode(001=NORMAL,010=ALARM,100=TIMER)
+  sel_3 mode_sel (
+      reset,
+      change_mode,
+      mode
+  );
+  //For toggling between modes with one button select(0001=Second, 0010=Minute, 0100=Hour, 1000=Day)
+  sel_4 select_sel (
+      reset,
+      select,
+      selected
+  );
+
+  sel_4 timezone_sel (
+      reset,
+      change_timezone,
+      timezone
+  );
+  // If enable=1, count, else not. Th:is is for Main mode only.
+  always @(posedge reset or posedge start_main) begin
+    if (reset == 1) enable = 0;
+    else if (mode == 3'b001) enable = ~enable;
+  end
+  // For Display mode 0=24 format, 1=AMPM
+  always @(posedge reset or posedge toggle_AMPM_24) begin
+    if (reset == 1) AMPM_24 = 0;
+    else AMPM_24 = ~AMPM_24;
+  end
+endmodule
 //Using One-Hot encoding to store the state. making a simple FSM that cycles
 //from S1->S2->S3->S1...
 //Default state is S1.
@@ -181,19 +208,22 @@ module sel_3 (
     input wire trigger,
     output reg [2:0] state
 );
+  reg [2:0] next_state;
   parameter S1 = 3'b001;
   parameter S2 = 3'b010;
   parameter S3 = 3'b100;
+  always @(*) begin
+
+    case (state)
+      S1: next_state <= S2;
+      S2: next_state <= S3;
+      S3: next_state <= S1;
+      default: next_state <= S1;
+    endcase
+  end
   always @(posedge trigger or posedge reset) begin
     if (reset) state = S1;
-    else begin
-      case (state)
-        S1: state <= S2;
-        S2: state <= S3;
-        S3: state <= S1;
-        default: state <= S1;
-      endcase
-    end
+    else state <= next_state;
   end
 endmodule
 
@@ -205,21 +235,25 @@ module sel_4 (
     input wire trigger,
     output reg [3:0] state
 );
+  reg [3:0] next_state;
   parameter S1 = 4'b0001;
   parameter S2 = 4'b0010;
   parameter S3 = 4'b0100;
   parameter S4 = 4'b1000;
+  always @(*) begin
+    case (state)
+      S1: next_state <= S2;
+      S2: next_state <= S3;
+      S3: next_state <= S4;
+      S4: next_state <= S1;
+      default: next_state <= S1;
+    endcase
+
+  end
+
   always @(posedge trigger or posedge reset) begin
     if (reset) state = S1;
-    else begin
-      case (state)
-        S1: state <= S2;
-        S2: state <= S3;
-        S3: state <= S4;
-        S4: state <= S1;
-        default: state <= S1;
-      endcase
-    end
+    else state <= next_state;
   end
 endmodule
 //This reads the time from 32 bit unix timestamp which can be fed into a shift
