@@ -222,7 +222,8 @@ module sel_4 (
     end
   end
 endmodule
-
+//This reads the time from 32 bit unix timestamp which can be fed into a shift
+//register using a external clock and input from a microcontroller.
 module unix32_to_binary (
     input wire reset,
     input wire unix_sclk,
@@ -237,7 +238,8 @@ module unix32_to_binary (
     else unix32 <= {unix_data, unix32[31:1]};  //Assuming LSB comes first
   end
 endmodule
-
+//The main counter for the clock. Supports increment and decrement manually.
+//Counts up on clock edge when enabled.
 module binary_counter (
     input wire reset,
     input wire clk,
@@ -512,6 +514,8 @@ module binary_time_converter (
 
 endmodule
 
+// This module chooses which time value to send to display. Also offsets the
+// time based on timezone.
 module tmux (
     input wire [27:0] t_main,
     input wire [27:0] t_alarm,
@@ -539,6 +543,8 @@ module tmux (
   end
 endmodule
 
+//Handles conversion into BCD formats and AMPM Mode. 
+//Fixes date when viewing in timer mode.
 module time_to_output (
     input wire [4:0] hh,
     input wire [5:0] mm,
