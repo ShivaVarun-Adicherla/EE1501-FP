@@ -70,7 +70,6 @@ module top_module (
       unix_load,
       t_main
   );
-
   //ALARM
   wire [27:0] t_alarm;
   alarm alarm_inst (
@@ -86,7 +85,6 @@ module top_module (
       t_alarm,
       alarm_buzzer,
       alarm_active_led
-
   );
   //TIMER
   wire [27:0] t_timer;
@@ -104,11 +102,7 @@ module top_module (
       t_timer,
       timer_buzzer,
       timer_active_led
-
   );
-
-
-
   //Choosing what to display based on mode and also implements timezone
   wire [27:0] t_out;
   tmux tmux_inst (
@@ -135,9 +129,7 @@ module top_module (
       MM,
       YYYY,
       week
-
   );
-
   time_to_output maindisplay (
       hh,
       mm,
@@ -288,20 +280,23 @@ module binary_counter (
     output reg [27:0] t
 );
   wire trigger;  //Using this for synthesiable design
+  wire rst = (t >= 1947 * 86400) | reset;
   assign trigger = increment | decrement | unix_load | enable & clk;
-  always @(posedge trigger or posedge reset) begin
-    if (reset == 1) t = 0;
-    else if (enable & clk) t = t + 1;
-    else if ((increment || decrement) && mode[0]) begin
-      case (selected)
-        //seconds
-        4'b0001: t <= increment ? t + 1 : t - 1;
-        4'b0010: t <= increment ? t + 60 : t - 60;
-        4'b0100: t <= increment ? t + 3600 : t - 3600;
-        4'b1000: t <= increment ? t + 86400 : t - 86400;
-        default: t <= t;
-      endcase
-    end else if (unix_load) t <= t_unix;
+  always @(posedge trigger or posedge rst) begin
+    if (rst == 1) t <= 0;
+    else begin
+      if (enable & clk) t <= t + 1;
+      else if ((increment || decrement) && mode[0]) begin
+        case (selected)
+          //seconds
+          4'b0001: t <= increment ? t + 1 : t - 1;
+          4'b0010: t <= increment ? t + 60 : t - 60;
+          4'b0100: t <= increment ? t + 3600 : t - 3600;
+          4'b1000: t <= increment ? t + 86400 : t - 86400;
+          default: t <= t;
+        endcase
+      end else if (unix_load) t <= t_unix;
+    end
   end
 endmodule
 
