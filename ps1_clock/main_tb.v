@@ -136,8 +136,11 @@ module top_module_tb;
     tempunix = 1745309913;
     for (i = 0; i < 32; i++) begin
       unix_input = tempunix[i];
-      #0.2;
-      `en(unix_sclk);
+      #0.001;
+      #0.001;
+      unix_sclk = 1;
+      #0.001;
+      unix_sclk = 0;
     end
     unix_input = 0;
     `en(unix_load);

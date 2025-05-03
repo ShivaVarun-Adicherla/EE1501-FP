@@ -338,7 +338,7 @@ module timer (
   // Setting to initial value on entering mode
   always @(posedge trigger or posedge reset) begin
     if (reset == 1) t_timer = 0;
-    else if (timer_active && clk == 1 && t_timer != 0) t_timer = t_timer - 1;
+    else if (timer_active && clk && t_timer != 0) t_timer = t_timer - 1;
     else if (!timer_active && (increment | decrement) && mode[2]) begin
       case (selected)
         //seconds
@@ -442,6 +442,7 @@ module binary_time_converter (
   always @(*) begin
     //Computing YYYY
     YYYY = 0000;
+    //days + 1 because initially days = 0 for first day of the year when it should be one 
     if (days + 1 <= 366) begin
       YYYY = 2020;
       remainingdays = days;
