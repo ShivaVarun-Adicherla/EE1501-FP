@@ -183,13 +183,13 @@ module control_block (
   );
   // If enable=1, count, else not. Th:is is for Main mode only.
   always @(posedge reset or posedge start_main) begin
-    if (reset == 1) enable = 0;
-    else if (mode == 3'b001) enable = ~enable;
+    if (reset == 1) enable <= 0;
+    else if (mode == 3'b001) enable <= ~enable;
   end
   // For Display mode 0=24 format, 1=AMPM
   always @(posedge reset or posedge toggle_AMPM_24) begin
-    if (reset == 1) AMPM_24 = 0;
-    else AMPM_24 = ~AMPM_24;
+    if (reset == 1) AMPM_24 <= 0;
+    else AMPM_24 <= ~AMPM_24;
   end
 endmodule
 //Using One-Hot encoding to store the state. making a simple FSM that cycles
@@ -214,7 +214,7 @@ module sel_3 (
     endcase
   end
   always @(posedge trigger or posedge reset) begin
-    if (reset) state = S1;
+    if (reset) state <= S1;
     else state <= next_state;
   end
 endmodule
@@ -244,7 +244,7 @@ module sel_4 (
   end
 
   always @(posedge trigger or posedge reset) begin
-    if (reset) state = S1;
+    if (reset) state <= S1;
     else state <= next_state;
   end
 endmodule
@@ -260,7 +260,7 @@ module unix32_to_binary (
   reg [31:0] unix32;  //SIPO Shift Register
   assign t = unix32 - 18262 * 86400;
   always @(posedge unix_sclk or posedge reset) begin
-    if (reset) unix32 = 0;
+    if (reset) unix32 <= 0;
     else unix32 <= {unix_data, unix32[31:1]};  //Assuming LSB comes first
   end
 endmodule
@@ -328,7 +328,7 @@ module timer (
   //timer activation logic.
   always @(posedge startstop or posedge reset) begin
     if (reset == 1) begin
-      timer_active = 0;
+      timer_active <= 0;
     end else
       timer_active <= (mode[2])&~timer_active; //when in timer MODE, triggering will TOGGLE. When outside it will just stop.
   end
