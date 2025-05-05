@@ -1,10 +1,10 @@
-module trafficSignalDisplay(output reg[2:0]T1, T2, output reg T1Walk, T2Walk, Buzzer, input wire[3:0] currentState);
+module trafficSignalDisplay(output reg[2:0]T1, T2, output reg T1Walk, T2Walk, Buzzer, input wire[3:0] currentState, input wire[1:0] emergencySignals);
 
     parameter S0 = 4'd0, S1 = 4'd1, S2 = 4'd2, S3 = 4'd3, S4 = 4'd4,
             S5 = 4'd5, S6 = 4'd6;
-
     parameter RED = 3'd1, YELLOW = 3'd2, GREEN = 3'd4; //These are basically a single bus, to set state of single light
     parameter HIGH = 1'b1, LOW = 1'b0;
+    parameter EMERGENCY_LEFT = 2'd2, EMERGENCY_RIGHT = 2'd1;
 
     always @(*) begin
         case(currentState)
@@ -57,6 +57,18 @@ module trafficSignalDisplay(output reg[2:0]T1, T2, output reg T1Walk, T2Walk, Bu
                 T2Walk = LOW;
                 Buzzer = LOW;
                 end
-            endcase
+        endcase
+
+        case(emergencySignals)
+            EMERGENCY_LEFT: begin
+                T1 = RED;
+                T1Walk = LOW;
+            end
+            EMERGENCY_RIGHT: begin
+                T1 = RED;
+                T2 = RED;
+                T2Walk = LOW;
+            end
+        endcase
     end
 endmodule
