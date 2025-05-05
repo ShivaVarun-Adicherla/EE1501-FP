@@ -12,7 +12,8 @@ input enable, clk, reset);
 * bring the counter back to a known state. Using it for
 * other logic is discouraged, since there's posibility of
 * a false edge, if the timing of reset is in such a way
-* that the overflow signal was LOW.
+* that the overflow signal was LOW, then the overflow is
+* pushed HIGH, since the counter got reset to TIME-1.
 */
 
 reg[$clog2(TIME) - 1: 0] count;

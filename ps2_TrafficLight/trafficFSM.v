@@ -31,7 +31,10 @@ always @ (*) begin
         S5: nextState = S6;
         S6: nextState = S0;
     endcase
-
+    /*
+    * The LSB is the enable for TS1 Counter, with the middle bit being
+    * enable for the TS2 Counter and so on. You should get the idea :)
+    */
     case(currentState)
         S0: enableCounters = 3'b001;
         S1: enableCounters = 3'b010;
