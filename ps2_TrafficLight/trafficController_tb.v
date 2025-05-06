@@ -7,7 +7,7 @@ module trafficController_tb();
     always #0.5 clk = ~clk;
 
     initial begin
-        $dumpfile("TrafficSeq.vcd");
+        $dumpfile("trafficController_tb.vcd");
         $dumpvars(0);
         reset = 1;
         clk = 0;

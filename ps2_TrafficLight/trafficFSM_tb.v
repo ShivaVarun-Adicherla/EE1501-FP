@@ -7,7 +7,7 @@ module trafficFSM_tb();
 
     always #1 nextEvent = ~nextEvent;
     initial begin
-        $dumpfile("Control.vcd");
+        $dumpfile("trafficFSM_tb.vcd");
         $dumpvars(0);
         reset = 1;
         nextEvent = 0;
