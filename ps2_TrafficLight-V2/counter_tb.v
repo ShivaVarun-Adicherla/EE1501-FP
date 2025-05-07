@@ -1,8 +1,15 @@
-module counter_tb();
+module counter_tb ();
   reg enable, reset, clk;
   wire out;
 
-  counter #(.TIME(3)) inst0 (.enable(enable), .clk(clk), .reset(reset), .overflow(out));
+  counter #(
+      .TIME(3)
+  ) inst0 (
+      .enable(enable),
+      .clk(clk),
+      .reset(reset),
+      .overflow(out)
+  );
   always #1 clk = ~clk;
   initial begin
     $dumpfile("counter_tb.vcd");

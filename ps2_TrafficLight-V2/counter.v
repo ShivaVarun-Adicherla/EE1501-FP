@@ -1,8 +1,13 @@
-module counter #(parameter TIME = 30)
-(output overflow,
-input enable, clk, reset);
+module counter #(
+    parameter TIME = 30
+) (
+    output overflow,
+    input  enable,
+    clk,
+    reset
+);
 
-/*
+  /*
 * This module is like an overflow timer found in many MCUs.
 * The basic idea is that the system does something or is
 * interupted from it's routine to perform a task, when the
@@ -20,15 +25,13 @@ input enable, clk, reset);
 * TIME values less than 3(exclusive).
 */
 
-reg[$clog2(TIME) - 1: 0] count;
+  reg [$clog2(TIME) - 1:0] count;
 
-always @(posedge clk, posedge reset) begin
-  if(reset)
-    count <= TIME; //We have TIME here because this state is init state.
-  else if(enable)
-    count <= (count - 1 > TIME) ? TIME : count - 1;
-end
+  always @(posedge clk, posedge reset) begin
+    if (reset) count <= TIME;  //We have TIME here because this state is init state.
+    else if (enable) count <= (count - 1 > TIME) ? TIME : count - 1;
+  end
 
-//We will have a posedge when the count rolls over to TIME
-assign overflow = count[$clog2(TIME)-1]; 
+  //We will have a posedge when the count rolls over to TIME
+  assign overflow = count[$clog2(TIME)-1];
 endmodule
