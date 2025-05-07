@@ -4,16 +4,16 @@ module trafficSignalDisplay_tb ();
   parameter EMERGENCY_LEFT = 2'd2, EMERGENCY_RIGHT = 2'd1, EMERGENCY_NONE = 2'b00;
 
   wire [2:0] out;
-  wire Walk, Buzzer, enableClock;
+  wire Walk, Buzzer, disableClock;
   reg rst, clk;
   reg [2:0] State;
   reg [1:0] eSig;
 
-  trafficSignalDisplay inst1 (
+  trafficSignalDisplay #(.TYPE(1)) inst1 (
       .Signal(out),
       .Walk(Walk),
       .Buzzer(Buzzer),
-      .enableClock(enableClock),
+      .disableClock(disableClock),
       .currentState(State),
       .emergencySignals(eSig),
       .reset(rst),
@@ -38,6 +38,9 @@ module trafficSignalDisplay_tb ();
     #5 State = S4;
 
     #10 eSig = EMERGENCY_RIGHT;
+    #9 eSig = EMERGENCY_NONE;
+    #40;
+    #10 eSig = EMERGENCY_LEFT;
     #9 eSig = EMERGENCY_NONE;
     #30;
     $finish;

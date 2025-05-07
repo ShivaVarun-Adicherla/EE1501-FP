@@ -32,19 +32,27 @@ module trafficController_tb ();
 
     #1 reset = 0;
     #30 T1pedButton = 1;
-    T2pedButton = 1;
     #2 T1pedButton = 0;
-    T2pedButton = 0;
+    #10.5 T2pedButton = 1;
+    #0.2 T2pedButton = 0;
+    #0.3;
 
-    eLeft = 1;
+    #80 eLeft = 1;
     #2 eLeft = 0;
 
-    #40;
+    #50;
 
     eRight = 1;
     #2 eRight = 0;
 
-    #400;
+    #40;
+
+    #30 T1pedButton = 1;
+    #2 T1pedButton = 0;
+    #10.5 T2pedButton = 1;
+    #0.2 T2pedButton = 0;
+    #0.3;
+    #80;
     $finish;
   end
 endmodule

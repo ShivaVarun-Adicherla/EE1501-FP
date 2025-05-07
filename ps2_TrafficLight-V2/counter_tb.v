@@ -3,7 +3,7 @@ module counter_tb ();
   wire out;
 
   counter #(
-      .TIME(3)
+      .TIME(10)
   ) inst0 (
       .enable(enable),
       .clk(clk),
