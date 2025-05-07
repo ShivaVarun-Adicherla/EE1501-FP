@@ -34,22 +34,28 @@ always @ (*) begin
                 nextState = S0;
 
             enableCounters = T3;
+            pedestrianReset = 1'b0;
         end
         S1:begin
             nextState = S2;
             enableCounters = T0;
+            pedestrianReset = 1'b0;
         end
         S2:begin
             nextState = S3;
             enableCounters = T1;
+            pedestrianReset = 1'b0;
         end
         S3:begin
             nextState = S4;
             enableCounters = T2;
+            pedestrianReset = 1'b0;
         end
         S4:begin
             nextState = S0;
             enableCounters = T0;
+            pedestrianReset = 1'b1;
+
         end
     endcase
 end

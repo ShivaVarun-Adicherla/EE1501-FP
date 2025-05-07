@@ -15,12 +15,9 @@ module trafficFSM_tb();
         #2 reset = 0;
         #40 pedButton = 1;
 
-        /*
-        * This is to demonstrate that just pushing the button down will not push the
-        * FSM to assume that pedestrains left. The reset is done by final state in
-        * Pedestrain Sequence.
-        */
         #20 pedButton = 0;
+        #2 pedButton = 1;
+        #2 pedButton = 0;
         #20;
         $finish;
     end
