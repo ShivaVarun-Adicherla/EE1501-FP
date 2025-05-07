@@ -33,20 +33,22 @@ module trafficSignalDisplay #(
     assign disableClock = State;
 
     if (TYPE == 2) begin
-
-      always @(posedge emergencySignals[0] or posedge reset or posedge lNextEvent) begin
+      always @(*) begin
+        if(emergencySignals[0])
+          State = HIGH;
+      end
+      always @(posedge reset or posedge lNextEvent) begin
         if (reset) State <= LOW;  //If State is LOW, It's in passthrough mode.
-        else if (emergencySignals[0])
-          State <= HIGH;  //If State is HIGH, It's in blocking Emergency Mode.
         else if (~emergencySignals && lNextEvent)
           State <= LOW;  //Return from Emergency to Normal Mode
       end
     end else if (TYPE == 1) begin
-
-      always @(posedge (|emergencySignals) or posedge reset or posedge lNextEvent) begin
+      always @(*) begin
+        if(|emergencySignals)
+          State = HIGH;
+      end
+      always @(posedge reset or posedge lNextEvent) begin
         if (reset) State <= LOW;  //If State is LOW, It's in passthrough mode.
-        else if (|emergencySignals)
-          State <= HIGH;  //If State is HIGH, It's in blocking Emergency Mode.
         else if (~(|emergencySignals) && lNextEvent)
           State <= LOW;  //Return from Emergency to Normal Mode
       end
